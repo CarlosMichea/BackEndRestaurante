@@ -1,25 +1,33 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ plato.nombre }} - Detalle del Plato{% endblock %}
+{% block title %}{{ plato.nombre }} | Sabores del Chef{% endblock %}
 
 {% block content %}
-<div class="mb-3">
-    <a href="{% url 'platos:lista' %}" class="btn btn-outline-secondary btn-sm">&larr; Volver a la lista</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{% url 'platos:lista' %}" class="btn btn-outline-secondary btn-sm">&larr; Volver al listado</a>
+    <span class="text-muted small">Ficha de plato #{{ plato.pk }}</span>
 </div>
 
-<div class="card border-0 shadow-sm">
+<div class="card tarjeta-restaurante shadow-sm overflow-hidden">
     <div class="row g-0">
-        {% if plato.imagen_url %}
-            <div class="col-md-4">
-                <img src="{{ plato.imagen_url }}" class="img-fluid rounded-start h-100 w-100"
-                     alt="{{ plato.nombre }}" style="object-fit: cover; min-height: 240px;">
-            </div>
-        {% endif %}
-        <div class="{% if plato.imagen_url %}col-md-8{% else %}col-12{% endif %}">
-            <div class="card-body p-4">
-                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
-                    <div>
-                        <span class="badge bg-secondary">{{ plato.get_categoria_display }}</span>
+        <div class="col-md-5">
+            {% if plato.imagen_url %}
+                <img src="{{ plato.imagen_url }}" class="img-fluid h-100 w-100"
+                     alt="{{ plato.nombre }}" style="object-fit: cover; min-height: 280px;">
+            {% else %}
+                <div class="imagen-placeholder h-100 p-4" style="min-height: 280px;">
+                    <span class="badge badge-dorado mb-2 px-3 py-2">{{ plato.get_categoria_display }}</span>
+                    <h2 class="h4 mb-1">{{ plato.nombre }}</h2>
+                    <small class="text-muted">Sin fotografía cargada</small>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-7">
+            <div class="card-body p-4 d-flex flex-column h-100">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge badge-categoria">{{ plato.get_categoria_display }}</span>
                         {% if plato.es_vegetariano %}
                             <span class="badge bg-info text-dark">Vegetariano</span>
                         {% endif %}
@@ -29,32 +37,55 @@
                             <span class="badge bg-danger">No disponible</span>
                         {% endif %}
                     </div>
-                    <h2 class="h4 text-primary mb-0">${{ plato.precio }} CLP</h2>
+                    <div class="fs-3 precio-clp" data-precio-clp="{{ plato.precio }}">
+                        $ {{ plato.precio }}
+                    </div>
                 </div>
 
                 <h1 class="h2 mb-3">{{ plato.nombre }}</h1>
-                <p class="lead fs-6">{{ plato.descripcion }}</p>
+                <p class="text-secondary mb-4">{{ plato.descripcion }}</p>
 
-                <dl class="row mt-4 mb-0">
-                    <dt class="col-sm-4 text-muted">Stock actual</dt>
-                    <dd class="col-sm-8">{{ plato.stock }} porciones</dd>
+                <!-- Ficha técnica del plato -->
+                <div class="row g-3 p-3 rounded-3 mb-4" style="background-color: var(--color-crema);">
+                    <div class="col-sm-6">
+                        <div class="small text-muted">Stock actual</div>
+                        <div class="fw-semibold mt-1">
+                            {% if plato.stock == 0 %}
+                                <span class="badge bg-danger">0 · Sin stock</span>
+                            {% elif plato.stock <= 5 %}
+                                <span class="badge bg-warning text-dark">{{ plato.stock }} porciones · Stock bajo</span>
+                            {% else %}
+                                <span class="badge bg-success">{{ plato.stock }} porciones · En stock</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="small text-muted">Tiempo de preparación</div>
+                        <div class="fw-semibold mt-1">{{ plato.tiempo_preparacion }} minutos</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="small text-muted">Fecha de creación</div>
+                        <div class="fw-semibold mt-1">{{ plato.fecha_creacion|date:"d/m/Y H:i" }}</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="small text-muted">Última actualización</div>
+                        <div class="fw-semibold mt-1">{{ plato.fecha_actualizacion|date:"d/m/Y H:i" }}</div>
+                    </div>
+                </div>
 
-                    <dt class="col-sm-4 text-muted">Tiempo de preparación</dt>
-                    <dd class="col-sm-8">{{ plato.tiempo_preparacion }} minutos</dd>
-
-                    <dt class="col-sm-4 text-muted">Fecha de creación</dt>
-                    <dd class="col-sm-8">{{ plato.fecha_creacion|date:"d/m/Y H:i" }}</dd>
-
-                    <dt class="col-sm-4 text-muted">Última actualización</dt>
-                    <dd class="col-sm-8">{{ plato.fecha_actualizacion|date:"d/m/Y H:i" }}</dd>
-                </dl>
-
-                <div class="d-flex gap-2 mt-4 pt-3 border-top">
-                    <a href="{% url 'platos:editar' plato.pk %}" class="btn btn-warning">Editar plato</a>
-                    <a href="{% url 'platos:eliminar' plato.pk %}" class="btn btn-danger">Eliminar plato</a>
+                <div class="d-flex flex-wrap gap-2 mt-auto pt-3 border-top">
+                    <a href="{% url 'platos:editar' plato.pk %}" class="btn btn-dorado">Editar plato</a>
+                    <a href="{% url 'platos:eliminar' plato.pk %}"
+                       class="btn btn-outline-danger btn-abrir-modal-eliminar"
+                       data-eliminar-url="{% url 'platos:eliminar' plato.pk %}"
+                       data-plato-nombre="{{ plato.nombre }}">
+                        Eliminar plato
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+{% include 'platos/_modal_eliminar.html' %}
 {% endblock %}

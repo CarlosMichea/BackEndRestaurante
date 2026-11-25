@@ -1,15 +1,21 @@
 {% extends 'base.html' %}
 
-{% block title %}Editar {{ plato.nombre }} - Restaurante{% endblock %}
+{% block title %}Editar {{ plato.nombre }} | Sabores del Chef{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{% url 'platos:detalle' plato.pk %}" class="btn btn-outline-secondary btn-sm">&larr; Volver al detalle</a>
+    <span class="badge badge-categoria">Modo edición</span>
+</div>
+
+<div class="row g-4">
+    <!-- Columna principal con formulario de actualización (incluye disponible) -->
     <div class="col-lg-8">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3">
-                <h1 class="h4 mb-1">Editar plato: {{ plato.nombre }}</h1>
-                <p class="text-muted small mb-0">
-                    Puedes actualizar todos los datos del plato. Recuerda que un plato con stock 0 no puede quedar disponible.
+        <div class="card tarjeta-restaurante shadow-sm overflow-hidden">
+            <div class="card-header py-3" style="background-color: var(--color-dorado-suave); border-bottom: 2px solid var(--color-dorado);">
+                <h1 class="h4 mb-1" style="color: var(--color-burdeos-oscuro);">Editar plato: {{ plato.nombre }}</h1>
+                <p class="small text-muted mb-0">
+                    Actualiza la información, el stock o el estado de disponibilidad en la carta.
                 </p>
             </div>
             <div class="card-body p-4">
@@ -17,12 +23,46 @@
                     {% csrf_token %}
                     {% include 'platos/_campos_formulario.html' %}
 
-                    <div class="d-flex justify-content-end gap-2 mt-4">
+                    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
                         <a href="{% url 'platos:detalle' plato.pk %}" class="btn btn-outline-secondary">Cancelar</a>
-                        <button type="submit" class="btn btn-warning">Actualizar plato</button>
+                        <button type="submit" class="btn btn-dorado px-4">Actualizar plato</button>
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Columna lateral exclusiva de edición: historial de fechas y estado actual -->
+    <div class="col-lg-4">
+        <div class="card tarjeta-restaurante shadow-sm mb-3">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h2 class="h5 mb-0">Historial del registro</h2>
+            </div>
+            <div class="card-body small">
+                <div class="mb-3">
+                    <div class="text-muted">Estado actual</div>
+                    <div class="mt-1">
+                        {% if plato.disponible %}
+                            <span class="badge bg-success">Disponible</span>
+                        {% else %}
+                            <span class="badge bg-danger">No disponible</span>
+                        {% endif %}
+                        <span class="badge bg-light text-dark border ms-1">Stock: {{ plato.stock }}</span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="text-muted">Fecha de creación</div>
+                    <div class="fw-semibold">{{ plato.fecha_creacion|date:"d/m/Y H:i" }}</div>
+                </div>
+                <div class="mb-0">
+                    <div class="text-muted">Última actualización</div>
+                    <div class="fw-semibold">{{ plato.fecha_actualizacion|date:"d/m/Y H:i" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info small shadow-sm mb-0">
+            <strong>Regla de negocio:</strong> un plato con <code>stock = 0</code> no puede quedar marcado como disponible.
         </div>
     </div>
 </div>

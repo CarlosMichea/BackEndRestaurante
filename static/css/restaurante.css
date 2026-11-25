@@ -1,0 +1,173 @@
+/* ==========================================================================
+   Estilos propios de "Sabores del Chef"
+   Paleta: Burdeos (#7B1E2B), Crema (#FDF6EC), Dorado (#C8963E)
+   Solo tipografías del sistema (funciona 100% sin conexión a internet)
+   ========================================================================== */
+
+:root {
+    --color-burdeos: #7B1E2B;
+    --color-burdeos-oscuro: #5A141E;
+    --color-crema: #FDF6EC;
+    --color-crema-suave: #FAF0E1;
+    --color-dorado: #C8963E;
+    --color-dorado-suave: #F3E5C8;
+    --color-texto: #2D2224;
+}
+
+body.fondo-restaurante {
+    background-color: var(--color-crema);
+    color: var(--color-texto);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+h1, h2, h3, .titulo-restaurante {
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+/* Barra de navegación principal */
+.navbar-restaurante {
+    background-color: var(--color-burdeos);
+    border-bottom: 3px solid var(--color-dorado);
+}
+
+.navbar-restaurante .navbar-brand {
+    color: #FFFFFF;
+    letter-spacing: 0.4px;
+}
+
+.navbar-restaurante .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    border-radius: 0.375rem;
+    padding: 0.45rem 0.9rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.navbar-restaurante .nav-link:hover {
+    color: #FFFFFF;
+    background-color: rgba(200, 150, 62, 0.22);
+}
+
+.navbar-restaurante .nav-link.active {
+    color: #FFFFFF;
+    background-color: var(--color-burdeos-oscuro);
+    border-bottom: 2px solid var(--color-dorado);
+    font-weight: 600;
+}
+
+/* Botones personalizados acordes a la paleta */
+.btn-burdeos {
+    background-color: var(--color-burdeos);
+    border-color: var(--color-burdeos);
+    color: #FFFFFF;
+}
+
+.btn-burdeos:hover,
+.btn-burdeos:focus {
+    background-color: var(--color-burdeos-oscuro);
+    border-color: var(--color-burdeos-oscuro);
+    color: #FFFFFF;
+}
+
+.btn-dorado {
+    background-color: var(--color-dorado);
+    border-color: var(--color-dorado);
+    color: #23181A;
+    font-weight: 600;
+}
+
+.btn-dorado:hover,
+.btn-dorado:focus {
+    background-color: #B48330;
+    border-color: #B48330;
+    color: #1A1213;
+}
+
+.btn-outline-burdeos {
+    color: var(--color-burdeos);
+    border-color: var(--color-burdeos);
+}
+
+.btn-outline-burdeos:hover {
+    background-color: var(--color-burdeos);
+    border-color: var(--color-burdeos);
+    color: #FFFFFF;
+}
+
+/* Hero de portada */
+.hero-restaurante {
+    background: linear-gradient(135deg, var(--color-burdeos) 0%, var(--color-burdeos-oscuro) 100%);
+    color: #FFFFFF;
+    border-bottom: 4px solid var(--color-dorado);
+    border-radius: 1rem;
+}
+
+.badge-dorado {
+    background-color: var(--color-dorado);
+    color: #23181A;
+    font-weight: 600;
+}
+
+.badge-categoria {
+    background-color: var(--color-dorado-suave);
+    color: var(--color-burdeos-oscuro);
+    border: 1px solid var(--color-dorado);
+    font-weight: 600;
+}
+
+/* Tarjetas generales y métricas */
+.tarjeta-restaurante {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(200, 150, 62, 0.35);
+    border-radius: 0.75rem;
+}
+
+.tarjeta-stat {
+    border-top: 4px solid var(--color-dorado);
+}
+
+.tarjeta-plato {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tarjeta-plato:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(123, 30, 43, 0.12) !important;
+}
+
+/* Placeholder visual cuando un plato no tiene imagen_url */
+.imagen-plato-card {
+    height: 175px;
+    object-fit: cover;
+}
+
+.imagen-placeholder {
+    background: linear-gradient(135deg, var(--color-crema-suave) 0%, var(--color-dorado-suave) 100%);
+    color: var(--color-burdeos);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.precio-clp {
+    color: var(--color-burdeos);
+    font-weight: 700;
+}
+
+/* Paginación con colores de la marca */
+.pagination .page-item.active .page-link {
+    background-color: var(--color-burdeos);
+    border-color: var(--color-burdeos);
+    color: #FFFFFF;
+}
+
+.pagination .page-link {
+    color: var(--color-burdeos);
+}
+
+/* Pie de página */
+.footer-restaurante {
+    background-color: #FFFFFF;
+    border-top: 2px solid rgba(200, 150, 62, 0.45);
+}

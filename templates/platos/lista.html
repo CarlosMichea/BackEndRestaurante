@@ -1,38 +1,41 @@
 {% extends 'base.html' %}
 
-{% block title %}Lista de Platos - Restaurante{% endblock %}
+{% block title %}Sabores del Chef | Listado de Platos{% endblock %}
 
 {% block content %}
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
     <div>
         <h1 class="h2 mb-1">Carta de Platos</h1>
-        <p class="text-muted mb-0">Administra los platos disponibles, stock y precios.</p>
+        <p class="text-muted mb-0">Consulta, busca, actualiza o elimina platos del menú.</p>
     </div>
-    <a href="{% url 'platos:crear' %}" class="btn btn-primary">+ Nuevo plato</a>
+    <a href="{% url 'platos:crear' %}" class="btn btn-burdeos">+ Nuevo plato</a>
 </div>
 
-<!-- Formulario de búsqueda (q) y filtro por categoría -->
-<form method="get" class="card border-0 shadow-sm mb-4">
+<!-- Buscador y filtro por categoría conservando los valores actuales -->
+<form method="get" class="card tarjeta-restaurante shadow-sm mb-4">
     <div class="card-body">
-        <div class="row g-2 align-items-end">
+        <div class="row g-3 align-items-end">
             <div class="col-md-5">
-                <label for="busqueda" class="form-label">Buscar por nombre o descripción</label>
-                <input type="text" id="busqueda" name="q" value="{{ busqueda }}" class="form-control"
-                       placeholder="Ej: pastel, salmón, tradicional...">
+                <label for="busqueda" class="form-label fw-semibold">Buscar plato</label>
+                <input type="text" id="busqueda" name="q"
+                       value="{% firstof busqueda q '' %}"
+                       class="form-control"
+                       placeholder="Nombre o ingrediente del plato...">
             </div>
             <div class="col-md-4">
-                <label for="categoria" class="form-label">Categoría</label>
+                <label for="categoria" class="form-label fw-semibold">Categoría</label>
                 <select id="categoria" name="categoria" class="form-select">
                     <option value="">Todas las categorías</option>
                     {% for valor, etiqueta in categorias %}
-                        <option value="{{ valor }}" {% if categoria_actual == valor %}selected{% endif %}>
+                        <option value="{{ valor }}"
+                                {% if categoria_actual == valor or categoria_sel == valor %}selected{% endif %}>
                             {{ etiqueta }}
                         </option>
                     {% endfor %}
                 </select>
             </div>
             <div class="col-md-3 d-flex gap-2">
-                <button type="submit" class="btn btn-dark flex-grow-1">Filtrar</button>
+                <button type="submit" class="btn btn-burdeos flex-grow-1">Filtrar</button>
                 <a href="{% url 'platos:lista' %}" class="btn btn-outline-secondary">Limpiar</a>
             </div>
         </div>
@@ -40,16 +43,16 @@
 </form>
 
 {% if platos %}
-    <div class="card border-0 shadow-sm">
+    <div class="card tarjeta-restaurante shadow-sm overflow-hidden">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Nombre</th>
+                        <th>Plato</th>
                         <th>Categoría</th>
                         <th>Precio</th>
                         <th>Stock</th>
-                        <th>Tiempo</th>
+                        <th>Preparación</th>
                         <th>Estado</th>
                         <th class="text-end">Acciones</th>
                     </tr>
@@ -58,23 +61,33 @@
                     {% for plato in platos %}
                         <tr>
                             <td>
-                                <a href="{% url 'platos:detalle' plato.pk %}" class="fw-semibold text-decoration-none">
+                                <a href="{% url 'platos:detalle' plato.pk %}"
+                                   class="fw-semibold text-decoration-none" style="color: var(--color-burdeos);">
                                     {{ plato.nombre }}
                                 </a>
                                 {% if plato.es_vegetariano %}
                                     <span class="badge bg-info text-dark ms-1">Vegetariano</span>
                                 {% endif %}
                             </td>
-                            <td>{{ plato.get_categoria_display }}</td>
-                            <td>${{ plato.precio }} CLP</td>
                             <td>
+                                <span class="badge badge-categoria">{{ plato.get_categoria_display }}</span>
+                            </td>
+                            <td class="text-nowrap">
+                                <span class="precio-clp" data-precio-clp="{{ plato.precio }}">
+                                    $ {{ plato.precio }}
+                                </span>
+                            </td>
+                            <td class="text-nowrap">
+                                <!-- Indicador visual de stock: rojo (0), amarillo (1-5), verde (>5) -->
                                 {% if plato.stock == 0 %}
-                                    <span class="badge bg-danger">0 (Agotado)</span>
+                                    <span class="badge bg-danger">0 · Sin stock</span>
+                                {% elif plato.stock <= 5 %}
+                                    <span class="badge bg-warning text-dark">{{ plato.stock }} · Stock bajo</span>
                                 {% else %}
-                                    {{ plato.stock }}
+                                    <span class="badge bg-success">{{ plato.stock }} · En stock</span>
                                 {% endif %}
                             </td>
-                            <td>{{ plato.tiempo_preparacion }} min</td>
+                            <td class="text-nowrap">{{ plato.tiempo_preparacion }} min</td>
                             <td>
                                 {% if plato.disponible %}
                                     <span class="badge bg-success">Disponible</span>
@@ -83,9 +96,17 @@
                                 {% endif %}
                             </td>
                             <td class="text-end text-nowrap">
-                                <a href="{% url 'platos:detalle' plato.pk %}" class="btn btn-sm btn-outline-primary">Ver</a>
-                                <a href="{% url 'platos:editar' plato.pk %}" class="btn btn-sm btn-outline-warning">Editar</a>
-                                <a href="{% url 'platos:eliminar' plato.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                                <div class="btn-group btn-group-sm" role="group" aria-label="Acciones del plato">
+                                    <a href="{% url 'platos:detalle' plato.pk %}" class="btn btn-outline-secondary">Ver</a>
+                                    <a href="{% url 'platos:editar' plato.pk %}" class="btn btn-outline-primary">Editar</a>
+                                    <!-- Con JS abre el modal; sin JS navega a eliminar_confirmar.html -->
+                                    <a href="{% url 'platos:eliminar' plato.pk %}"
+                                       class="btn btn-outline-danger btn-abrir-modal-eliminar"
+                                       data-eliminar-url="{% url 'platos:eliminar' plato.pk %}"
+                                       data-plato-nombre="{{ plato.nombre }}">
+                                        Eliminar
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}
@@ -94,14 +115,14 @@
         </div>
     </div>
 
-    <!-- Paginación preservando los filtros activos -->
+    <!-- Paginación conservando búsqueda y categoría -->
     {% if page_obj.has_other_pages %}
         <nav aria-label="Paginación de platos" class="mt-4">
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
                     <li class="page-item">
                         <a class="page-link"
-                           href="?page={{ page_obj.previous_page_number }}&q={{ busqueda|urlencode }}&categoria={{ categoria_actual|urlencode }}">
+                           href="?page={{ page_obj.previous_page_number }}&q={% if q %}{{ q|urlencode }}{% else %}{{ busqueda|default:''|urlencode }}{% endif %}&categoria={% if categoria_sel %}{{ categoria_sel|urlencode }}{% else %}{{ categoria_actual|default:''|urlencode }}{% endif %}">
                             Anterior
                         </a>
                     </li>
@@ -112,7 +133,7 @@
                 {% for num in page_obj.paginator.page_range %}
                     <li class="page-item {% if page_obj.number == num %}active{% endif %}">
                         <a class="page-link"
-                           href="?page={{ num }}&q={{ busqueda|urlencode }}&categoria={{ categoria_actual|urlencode }}">
+                           href="?page={{ num }}&q={% if q %}{{ q|urlencode }}{% else %}{{ busqueda|default:''|urlencode }}{% endif %}&categoria={% if categoria_sel %}{{ categoria_sel|urlencode }}{% else %}{{ categoria_actual|default:''|urlencode }}{% endif %}">
                             {{ num }}
                         </a>
                     </li>
@@ -121,7 +142,7 @@
                 {% if page_obj.has_next %}
                     <li class="page-item">
                         <a class="page-link"
-                           href="?page={{ page_obj.next_page_number }}&q={{ busqueda|urlencode }}&categoria={{ categoria_actual|urlencode }}">
+                           href="?page={{ page_obj.next_page_number }}&q={% if q %}{{ q|urlencode }}{% else %}{{ busqueda|default:''|urlencode }}{% endif %}&categoria={% if categoria_sel %}{{ categoria_sel|urlencode }}{% else %}{{ categoria_actual|default:''|urlencode }}{% endif %}">
                             Siguiente
                         </a>
                     </li>
@@ -132,8 +153,24 @@
         </nav>
     {% endif %}
 {% else %}
-    <div class="alert alert-warning">
-        No se encontraron platos con los criterios indicados.
+    <!-- Estado vacío cuando no hay resultados o aún no existen platos -->
+    <div class="card tarjeta-restaurante shadow-sm text-center p-5">
+        <h2 class="h4 mb-2">No hay platos para mostrar</h2>
+        <p class="text-muted mb-4">
+            {% if busqueda or q or categoria_actual or categoria_sel %}
+                No encontramos coincidencias con los filtros aplicados. Prueba limpiando la búsqueda.
+            {% else %}
+                La carta aún no tiene platos registrados. Comienza agregando el primero.
+            {% endif %}
+        </p>
+        <div class="d-flex justify-content-center gap-2">
+            {% if busqueda or q or categoria_actual or categoria_sel %}
+                <a href="{% url 'platos:lista' %}" class="btn btn-outline-secondary">Ver todos los platos</a>
+            {% endif %}
+            <a href="{% url 'platos:crear' %}" class="btn btn-burdeos">+ Nuevo plato</a>
+        </div>
     </div>
 {% endif %}
+
+{% include 'platos/_modal_eliminar.html' %}
 {% endblock %}
