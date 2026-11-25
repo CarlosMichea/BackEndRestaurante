@@ -1,15 +1,21 @@
 {% extends 'base.html' %}
 
-{% block title %}Nuevo Plato - Restaurante{% endblock %}
+{% block title %}Nuevo Plato | Sabores del Chef{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{% url 'platos:lista' %}" class="btn btn-outline-secondary btn-sm">&larr; Volver al listado</a>
+    <span class="badge badge-dorado">Alta de plato</span>
+</div>
+
+<div class="row g-4">
+    <!-- Columna principal con formulario de creación -->
     <div class="col-lg-8">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3">
+        <div class="card tarjeta-restaurante shadow-sm overflow-hidden">
+            <div class="card-header text-white py-3" style="background-color: var(--color-burdeos);">
                 <h1 class="h4 mb-1">Registrar nuevo plato</h1>
-                <p class="text-muted small mb-0">
-                    La disponibilidad inicial se asignará automáticamente según el stock ingresado (mayor a 0).
+                <p class="small mb-0 text-white-50">
+                    Completa los datos para incorporar una nueva preparación a la carta.
                 </p>
             </div>
             <div class="card-body p-4">
@@ -17,11 +23,39 @@
                     {% csrf_token %}
                     {% include 'platos/_campos_formulario.html' %}
 
-                    <div class="d-flex justify-content-end gap-2 mt-4">
+                    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
                         <a href="{% url 'platos:lista' %}" class="btn btn-outline-secondary">Cancelar</a>
-                        <button type="submit" class="btn btn-primary">Guardar plato</button>
+                        <button type="submit" class="btn btn-burdeos px-4">Guardar plato</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Columna lateral exclusiva de creación: guía por pasos y ayuda -->
+    <div class="col-lg-4">
+        <div class="card tarjeta-restaurante shadow-sm">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h2 class="h5 mb-0">Guía rápida de registro</h2>
+            </div>
+            <div class="card-body">
+                <ol class="ps-3 mb-3 small">
+                    <li class="mb-2">
+                        <strong>Identidad del plato:</strong> elige un nombre único (mín. 3 caracteres)
+                        y describe sus ingredientes (mín. 10 caracteres).
+                    </li>
+                    <li class="mb-2">
+                        <strong>Precio y stock:</strong> ingresa el valor en pesos chilenos ($1 a $500.000)
+                        y la cantidad inicial disponible.
+                    </li>
+                    <li class="mb-0">
+                        <strong>Disponibilidad automática:</strong> si el stock es mayor a <code>0</code>,
+                        el plato quedará activo; si es <code>0</code>, quedará no disponible.
+                    </li>
+                </ol>
+                <div class="alert alert-warning small mb-0">
+                    Los campos marcados con <span class="text-danger fw-bold">*</span> son obligatorios.
+                </div>
             </div>
         </div>
     </div>
