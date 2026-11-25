@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Platos - Restaurante{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div>
+        <h1 class="h2 mb-1">Carta de Platos</h1>
+        <p class="text-muted mb-0">Administra los platos disponibles, stock y precios.</p>
+    </div>
+    <a href="{% url 'platos:crear' %}" class="btn btn-primary">+ Nuevo plato</a>
+</div>
+
+<!-- Formulario de búsqueda (q) y filtro por categoría -->
+<form method="get" class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label for="busqueda" class="form-label">Buscar por nombre o descripción</label>
+                <input type="text" id="busqueda" name="q" value="{{ busqueda }}" class="form-control"
+                       placeholder="Ej: pastel, salmón, tradicional...">
+            </div>
+            <div class="col-md-4">
+                <label for="categoria" class="form-label">Categoría</label>
+                <select id="categoria" name="categoria" class="form-select">
+                    <option value="">Todas las categorías</option>
+                    {% for valor, etiqueta in categorias %}
+                        <option value="{{ valor }}" {% if categoria_actual == valor %}selected{% endif %}>
+                            {{ etiqueta }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-dark flex-grow-1">Filtrar</button>
+                <a href="{% url 'platos:lista' %}" class="btn btn-outline-secondary">Limpiar</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% if platos %}
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Tiempo</th>
+                        <th>Estado</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plato in platos %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'platos:detalle' plato.pk %}" class="fw-semibold text-decoration-none">
+                                    {{ plato.nombre }}
+                                </a>
+                                {% if plato.es_vegetariano %}
+                                    <span class="badge bg-info text-dark ms-1">Vegetariano</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ plato.get_categoria_display }}</td>
+                            <td>${{ plato.precio }} CLP</td>
+                            <td>
+                                {% if plato.stock == 0 %}
+                                    <span class="badge bg-danger">0 (Agotado)</span>
+                                {% else %}
+                                    {{ plato.stock }}
+                                {% endif %}
+                            </td>
+                            <td>{{ plato.tiempo_preparacion }} min</td>
+                            <td>
+                                {% if plato.disponible %}
+                                    <span class="badge bg-success">Disponible</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">No disponible</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end text-nowrap">
+                                <a href="{% url 'platos:detalle' plato.pk %}" class="btn btn-sm btn-outline-primary">Ver</a>
+                                <a href="{% url 'platos:editar' plato.pk %}" class="btn btn-sm btn-outline-warning">Editar</a>
+                                <a href="{% url 'platos:eliminar' plato.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Paginación preservando los filtros activos -->
+    {% if page_obj.has_other_pages %}
+        <nav aria-label="Paginación de platos" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_obj.previous_page_number }}&q={{ busqueda|urlencode }}&categoria={{ categoria_actual|urlencode }}">
+                            Anterior
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link"
+                           href="?page={{ num }}&q={{ busqueda|urlencode }}&categoria={{ categoria_actual|urlencode }}">
+                            {{ num }}
+                        </a>
+                    </li>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_obj.next_page_number }}&q={{ busqueda|urlencode }}&categoria={{ categoria_actual|urlencode }}">
+                            Siguiente
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <div class="alert alert-warning">
+        No se encontraron platos con los criterios indicados.
+    </div>
+{% endif %}
+{% endblock %}

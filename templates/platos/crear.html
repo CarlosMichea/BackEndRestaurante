@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Plato - Restaurante{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h1 class="h4 mb-1">Registrar nuevo plato</h1>
+                <p class="text-muted small mb-0">
+                    La disponibilidad inicial se asignará automáticamente según el stock ingresado (mayor a 0).
+                </p>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% include 'platos/_campos_formulario.html' %}
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'platos:lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Guardar plato</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

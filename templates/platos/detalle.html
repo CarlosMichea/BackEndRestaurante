@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ plato.nombre }} - Detalle del Plato{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'platos:lista' %}" class="btn btn-outline-secondary btn-sm">&larr; Volver a la lista</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="row g-0">
+        {% if plato.imagen_url %}
+            <div class="col-md-4">
+                <img src="{{ plato.imagen_url }}" class="img-fluid rounded-start h-100 w-100"
+                     alt="{{ plato.nombre }}" style="object-fit: cover; min-height: 240px;">
+            </div>
+        {% endif %}
+        <div class="{% if plato.imagen_url %}col-md-8{% else %}col-12{% endif %}">
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                    <div>
+                        <span class="badge bg-secondary">{{ plato.get_categoria_display }}</span>
+                        {% if plato.es_vegetariano %}
+                            <span class="badge bg-info text-dark">Vegetariano</span>
+                        {% endif %}
+                        {% if plato.disponible %}
+                            <span class="badge bg-success">Disponible</span>
+                        {% else %}
+                            <span class="badge bg-danger">No disponible</span>
+                        {% endif %}
+                    </div>
+                    <h2 class="h4 text-primary mb-0">${{ plato.precio }} CLP</h2>
+                </div>
+
+                <h1 class="h2 mb-3">{{ plato.nombre }}</h1>
+                <p class="lead fs-6">{{ plato.descripcion }}</p>
+
+                <dl class="row mt-4 mb-0">
+                    <dt class="col-sm-4 text-muted">Stock actual</dt>
+                    <dd class="col-sm-8">{{ plato.stock }} porciones</dd>
+
+                    <dt class="col-sm-4 text-muted">Tiempo de preparación</dt>
+                    <dd class="col-sm-8">{{ plato.tiempo_preparacion }} minutos</dd>
+
+                    <dt class="col-sm-4 text-muted">Fecha de creación</dt>
+                    <dd class="col-sm-8">{{ plato.fecha_creacion|date:"d/m/Y H:i" }}</dd>
+
+                    <dt class="col-sm-4 text-muted">Última actualización</dt>
+                    <dd class="col-sm-8">{{ plato.fecha_actualizacion|date:"d/m/Y H:i" }}</dd>
+                </dl>
+
+                <div class="d-flex gap-2 mt-4 pt-3 border-top">
+                    <a href="{% url 'platos:editar' plato.pk %}" class="btn btn-warning">Editar plato</a>
+                    <a href="{% url 'platos:eliminar' plato.pk %}" class="btn btn-danger">Eliminar plato</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
